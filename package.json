@@ -49,5 +49,8 @@
       "examples/build.js",
       "dist/**"
     ]
+  },
+  "dependencies": {
+    "twilio": "^2.11.1"
   }
 }
