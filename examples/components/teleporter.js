@@ -1,9 +1,4 @@
-var accountSid = 'AC0639d6030e48d80dc09e9eddf6016622';
-var authToken = 'e38657d5b3e2c0c29afdceb12fe75a73';
-
-//require the Twilio module and create a REST client
-var client = require('twilio')(accountSid, authToken);
-
+var meetingSN = "";
 AFRAME.registerSystem('teleporter', {
     init: function () {
         console.log("in teleporter system init");
@@ -21,10 +16,14 @@ AFRAME.registerComponent('teleporter', {
     },
     showRaycaster: function() {
         console.log("working!!!!!!!!!!");
-        rest = "https://app.liveh2h.com/tutormeetweb/rest/v1/meetings/instant"
-        name = "Christian Acuna"
-        email = "cacuna0828@gmail.com"
-        var obj = {"name":name, "email":email};
+
+        // rest = "https://app.liveh2h.com/tutormeetweb/rest/v1/meetings/instant"
+        var rest = "https://sandbox.liveh2h.com/tutormeetweb/rest/v1/meetings/createInstantMeeting"
+        // name = "Christian Acuna"
+        var email = "cacuna0828@gmail.com"
+        var appId = "49D8EC1C-9823-47B6-86F0-CBA29E996C2D"
+        // emailList = ["alex.m.4155@gmail.com"]
+        var obj = {"email":email, "applicationId": appId};
         var objstr = JSON.stringify(obj);
         var meetingurl = "";
         jQuery.ajax( {
@@ -35,17 +34,11 @@ AFRAME.registerComponent('teleporter', {
                 xhr.setRequestHeader("Content-Type", "application/json");
             },
             success: function( response ) {
-                 meetingurl = response.data.meetingURL;
-                 console.log(response.data);
+                //  meetingurl = response.data.meetingURL;
+                 console.log(response.data, response.data.meetingSn);
+                 meetingSN = response.data.meetingSn;
                 //  window.location = response.data.meetingURL
                  window.open(response.data.meetingURL,"_blank");
-                 client.messages.create({
-                     to: "+1706-256-8014",
-                     from: "+15017250604",
-                     body: "This is the ship that made the Kessel Run in fourteen parsecs?",
-                 }, function(err, message) {
-                     console.log(message.sid);
-                 });
             },
             error: function( response ) {
                  if(document.getElementById( 'widgetFailureMessageEng' )){
@@ -58,6 +51,32 @@ AFRAME.registerComponent('teleporter', {
 
     },
     invite: function() {
-      console.log('invite!!!!!!!!!!!');
-    }
+      console.log('HHHIIIIIIIIIIIII');
+      var rest = "https://sandbox.liveh2h.com/tutormeetweb/rest/v1/meetings/addInvitee"
+      // name = "Christian Acuna"
+      var emailList = ["alex.m.4155@gmail.com"];
+      var inviter = "Christian Acuna";
+      // var meetingSN = "NDd2aWoyQ3dxenhFRkVuMURTNHVuUT09";
+      console.log(meetingSN);
+
+      var obj = {"emailList": emailList, "meetingSn": meetingSN, "inviterName": inviter };
+      var objstr = JSON.stringify(obj);
+      var meetingurl = "";
+      jQuery.ajax( {
+          url: rest,
+          type: 'POST',
+          data: objstr,
+          beforeSend : function( xhr ) {
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.setRequestHeader("apiToken", "xPJHr4/DnYSvhTSEYN6HcyGULB7R");
+          },
+          success: function( response ) {
+              //  meetingurl = response.data.meetingURL;
+               console.log(response.data);
+              //  window.location = response.data.meetingURL
+              //  window.open(response.data.meetingURL,"_blank");
+          }
+        })
+      }
+
 });

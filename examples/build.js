@@ -1,7 +1,92 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-require('../index.js');
+var meetingSN = "";
+AFRAME.registerSystem('teleporter', {
+    init: function () {
+        console.log("in teleporter system init");
+    },
+    onSceneLoaded: function(evt) {
+        console.log("in voice-command system onSceneLoaded listener");
+    },
+});
+AFRAME.registerComponent('teleporter', {
 
-},{"../index.js":2}],2:[function(require,module,exports){
+    schema: {
+    },
+    init: function () {
+        console.log("in teleporter init");
+    },
+    showRaycaster: function() {
+        console.log("working!!!!!!!!!!");
+
+        // rest = "https://app.liveh2h.com/tutormeetweb/rest/v1/meetings/instant"
+        var rest = "https://sandbox.liveh2h.com/tutormeetweb/rest/v1/meetings/createInstantMeeting"
+        // name = "Christian Acuna"
+        var email = "cacuna0828@gmail.com"
+        var appId = "50DBB49B-8CEE-4052-A150-542D886B2323"
+        // emailList = ["alex.m.4155@gmail.com"]
+        var obj = {"email":email, "applicationId": appId};
+        var objstr = JSON.stringify(obj);
+        var meetingurl = "";
+        jQuery.ajax( {
+            url: rest,
+            type: 'POST',
+            data: objstr,
+            beforeSend : function( xhr ) {
+                xhr.setRequestHeader("Content-Type", "application/json");
+            },
+            success: function( response ) {
+                //  meetingurl = response.data.meetingURL;
+                 console.log(response.data, response.data.meetingSn);
+                 meetingSN = response.data.meetingSn;
+                 window.open(response.data.meetingURL,"_blank");
+            },
+            error: function( response ) {
+                 if(document.getElementById( 'widgetFailureMessageEng' )){
+                 		document.getElementById( 'widgetFailureMessageEng' ).innerHTML ="You are missing a required field";
+                 }
+            }
+        } );
+
+        return false;
+
+    },
+    invite: function() {
+      console.log('HHHIIIIIIIIIIIII');
+      var rest = "https://sandbox.liveh2h.com/tutormeetweb/rest/v1/meetings/addInvitee"
+      // name = "Christian Acuna"
+      var emailList = ["alex.m.4155@gmail.com"];
+      var appId = "50DBB49B-8CEE-4052-A150-542D886B2323"
+      var inviter = "Christian Acuna";
+      // var meetingSN = "NDd2aWoyQ3dxenhFRkVuMURTNHVuUT09";
+      console.log(meetingSN);
+
+      var obj = {"emailList": emailList, "meetingSn": meetingSN, "inviterName": inviter };
+      var objstr = JSON.stringify(obj);
+      var meetingurl = "";
+      jQuery.ajax( {
+          url: rest,
+          type: 'POST',
+          data: objstr,
+          beforeSend : function( xhr ) {
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.setRequestHeader("apiToken", "xPJHr4/DnYSvhTSEYN6HcyGULB7R");
+          },
+          success: function( response ) {
+              //  meetingurl = response.data.meetingURL;
+               console.log(response.data);
+              //  window.location = response.data.meetingURL
+              //  window.open(response.data.meetingURL,"_blank");
+          }
+        })
+      }
+
+});
+
+},{}],2:[function(require,module,exports){
+require('../index.js');
+require('./components/teleporter.js');
+
+},{"../index.js":3,"./components/teleporter.js":1}],3:[function(require,module,exports){
 /* global AFRAME */
 
 if (typeof AFRAME === 'undefined') {
@@ -108,4 +193,4 @@ AFRAME.registerComponent('annyang-speech-recognition', {
 });
 
 
-},{}]},{},[1]);
+},{}]},{},[2]);
